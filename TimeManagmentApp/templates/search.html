@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Search by "{{query_text }}" results</h1>
+
+<ul>
+{% for project_obj in project_list %}
+    <li><a href="{% url 'project' project_obj.id %}">{{ project_obj.name }}</a>, {{ project_obj.customer.customer_name}}</li>
+{% endfor %}
+</ul>
+
+
+
+{% endblock %}

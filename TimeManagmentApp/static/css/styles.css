@@ -1,0 +1,20 @@
+body {
+    background-color: #dccce3
+}
+
+.sidebar-nav {
+    list-style: none;
+    margin-top: 10px;
+}
+
+.card {
+min-height: 400px;
+width: 100%;
+}
+.card-body{
+height: 25%;
+}
+.card img{
+height: 75%;
+object-fit: contain;
+}

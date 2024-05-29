@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Chosen project is ({{ project.name }})</h1>
+<hr/>
+<div>
+    <h4>Project name:</h4>{{project.name}}
+    <h4>About project:</h4>{{project.description}}
+    <h4>Project takes place at:</h4>{{project.place_city}}
+    <h4>Project customer:</h4>{{project.customer.customer_name}}
+    <p>To know more about customer <a href="{% url 'customer' project.customer.id %}">press here</a></p>
+</div>
+
+
+
+{% endblock %}

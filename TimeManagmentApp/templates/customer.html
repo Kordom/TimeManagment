@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{customer.customer_name}}</h1>
+<hr/>
+<div>
+    <h4>Customer business number:</h4>{{customer.customer_number}}
+    <h4>Customer main office located:</h4>{{customer.customer_main_office}}
+</div>
+<hr/>
+<h1>At the moment with this customer ({{customer.customer_name}}) we have these projects:</h1>
+<div>
+    {% for projects in customer.project_set.all %}
+    <p><a href="{% url 'project' projects.id %}">{{projects.name}}</a></p>
+    {% endfor %}
+</div>
+
+
+{% endblock %}
