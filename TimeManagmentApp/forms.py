@@ -12,3 +12,8 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('email',)
+
+class WorkerAssignmentForm(forms.ModelForm):
+    class Meta:
+        model = WorkerGroup
+        fields = ('project_id.name',)

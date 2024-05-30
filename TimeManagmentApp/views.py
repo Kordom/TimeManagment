@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 import re
 from .models import *
-from .forms import ProfileUpdateForm, UserUpdateForm
+from .forms import ProfileUpdateForm, UserUpdateForm, WorkerAssignmentForm
 
 
 # Create your views here.
@@ -32,24 +32,25 @@ class CustomerDetailView(generic.DetailView):
     template_name = 'customer.html'
 
 
-class CustomerListView(generic.ListView):
+class CustomerListView(LoginRequiredMixin, generic.ListView):
     model = Customer
     context_object_name = 'customer_list'
     template_name = 'customers.html'
 
 
-class WorkerListView(generic.ListView):
+class WorkerListView(LoginRequiredMixin, generic.ListView):
     model = Worker
     context_object_name = 'worker_list'
     template_name = 'workers.html'
 
 
-class WorkerDetailView(generic.DetailView):
+class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Worker
     context_object_name = 'worker'
     template_name = 'worker.html'
 
 
+# HOME SCREEN
 def index(request):
     num_projects = Project.objects.count()
     num_employee = Worker.objects.count()
@@ -64,6 +65,7 @@ def index(request):
     return render(request, 'home.html', context=context)
 
 
+# SEARCH FIELD
 def search(request):
     query_text = request.GET['search_text']
     search_results = Project.objects.filter(Q(name__icontains=query_text) |
@@ -77,9 +79,9 @@ def search(request):
     return render(request, 'search.html', context=context)
 
 
+# USER CREATION
 @csrf_protect
 def register_user(request):
-    simbols_list = ['!', '@', '#', '$', '%', '^', '&', '*', ]
     if request.method == 'GET':
         return render(request, 'registration/registration.html')
     elif request.method == 'POST':
@@ -117,12 +119,12 @@ def register_user(request):
         if messages.get_messages(request):
             return redirect('register-url')
 
-        # jeigu nebuvo kurimo metu jokiu klaidu mes galime registruoti nauja useri
         User.objects.create_user(username=username, email=email, password=password)
         messages.info(request, f'Your profile: {username}, {email}, successfully registered')
         return redirect('login')
 
 
+# MY CABINET CREATION
 @login_required
 def my_cabinet(request):
     if request.method == 'POST':
@@ -144,3 +146,4 @@ def my_cabinet(request):
         'u_form': u_form,
     }
     return render(request, 'profile.html', context=context)
+
