@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-
+from . import secret
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -31,7 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    "TimeManagmentApp",
+    "TimeManagmentApp.apps.TimemanagmentappConfig",
+    'crispy_forms',
+    'crispy_bootstrap4',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -122,3 +124,20 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# MEDIA FOLDER
+MEDIA_ROOT = Path(BASE_DIR, 'TimeManagmentApp/media')
+
+MEDIA_URL = '/media/'
+
+# SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+DEFAULT_FROM_EMAIL = secret.EMAIL
+EMAIL_HOST = secret.HOST
+EMAIL_PORT = 587
+EMAIL_USE_TLS = False
+EMAIL_HOST_USER = secret.EMAIL
+EMAIL_HOST_PASSWORD = secret.EMAIL_PASSWORD
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'

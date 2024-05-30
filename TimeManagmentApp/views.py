@@ -8,8 +8,9 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
-
+import re
 from .models import *
+from .forms import ProfileUpdateForm, UserUpdateForm
 
 
 # Create your views here.
@@ -44,13 +45,18 @@ class CustomerDetailView(generic.DetailView):
     context_object_name = 'customer'
     template_name = 'customer.html'
 
+class CustomerListView(generic.ListView):
+    model = Customer
+    context_object_name = 'customer_list'
+    template_name = 'customers.html'
+
 
 def search(request):
     query_text = request.GET['search_text']
     search_results = Project.objects.filter(Q(name__icontains=query_text) |
-                                         Q(place_city__icontains=query_text) |
-                                         Q(customer__customer_name__icontains=query_text)
-                                         )
+                                            Q(place_city__icontains=query_text) |
+                                            Q(customer__customer_name__icontains=query_text)
+                                            )
     context = {
         'project_list': search_results,
         'query_text': query_text
@@ -60,6 +66,7 @@ def search(request):
 
 @csrf_protect
 def register_user(request):
+    simbols_list = ['!', '@', '#', '$', '%', '^', '&', '*', ]
     if request.method == 'GET':
         return render(request, 'registration/registration.html')
     elif request.method == 'POST':
@@ -67,24 +74,60 @@ def register_user(request):
         email = request.POST['email']
         password = request.POST['password']
         password2 = request.POST['password2']
-
         if password != password2:
-            messages.warning(request, "Slaptazodziai nesutampa!!")
+            messages.warning(request, "Passwords are not the same")
+
+        if not re.search("\W", password):
+            messages.warning(request, "Password should have atleast one symbol")
+
+        if not re.search("\d", password):
+            messages.warning(request, "Password should have atleast one number")
+
+        if not re.search("[A-Z]", password):
+            messages.warning(request, "Password should have atleast upper case letter")
+
+        if not re.search("[a-z]", password):
+            messages.warning(request, "Password should have atleast lower case letter")
+
+        if len(password) < 8:
+            messages.warning(request, "Password is not long enough")
 
         if User.objects.filter(username=username).exists():
-            messages.warning(request, f"Profilis {username} jau uzimtas")
+            messages.warning(request, f"Profile {username} already exists")
 
         if not email:
-            messages.warning(request, "Email ne ivestas")
+            messages.warning(request, "Enter your email")
 
-        if User.objects.filter(email=email).exists():
-            messages.warning(request, f"Pastas {email} jau uzimtas. Gal pamirsote slaptazodi?")
+        if User.objects.filter(email=email).exists() and email != '':
+            messages.warning(request, f"This {email} already have an account. Maybe you forgot password? ")
 
-        # jeigu yra nor viena zinute messages(reiskia turime klada ir neimanoma iregisstruoti vartotoja)
         if messages.get_messages(request):
             return redirect('register-url')
 
         # jeigu nebuvo kurimo metu jokiu klaidu mes galime registruoti nauja useri
         User.objects.create_user(username=username, email=email, password=password)
-        messages.info(request, f'Jusu profilis: {username}, {email}, sekmingai uregistruotas')
+        messages.info(request, f'Your profile: {username}, {email}, successfully registered')
         return redirect('login')
+
+
+@login_required
+def my_cabinet(request):
+    if request.method == 'POST':
+        p_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        if p_form.is_valid() and u_form.is_valid():
+            p_form.save()
+            u_form.save()
+            messages.info(request, 'Profile has been updated')
+        else:
+            messages.warning(request, 'Error has occured')
+        return redirect('home')
+
+    p_form = ProfileUpdateForm(instance=request.user.profile)
+    u_form = UserUpdateForm(instance=request.user)
+
+    context = {
+        'p_form': p_form,
+        'u_form': u_form,
+    }
+    return render(request, 'profile.html', context=context)

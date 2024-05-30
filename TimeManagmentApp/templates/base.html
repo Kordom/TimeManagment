@@ -28,26 +28,11 @@
     >
       <div class="container">
         <a class="navbar-brand" href="{% url 'home' %}">
-          <svg
-            class="bi bi-book-half"
-            width="2em"
-            height="2em"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M3.214 1.072C4.813.752 6.916.71 8.354 2.146A.5.5 0 018.5 2.5v11a.5.5 0 01-.854.354c-.843-.844-2.115-1.059-3.47-.92-1.344.14-2.66.617-3.452 1.013A.5.5 0 010 13.5v-11a.5.5 0 01.276-.447L.5 2.5l-.224-.447.002-.001.004-.002.013-.006a5.017 5.017 0 01.22-.103 12.958 12.958 0 012.7-.869zM1 2.82v9.908c.846-.343 1.944-.672 3.074-.788 1.143-.118 2.387-.023 3.426.56V2.718c-1.063-.929-2.631-.956-4.09-.664A11.958 11.958 0 001 2.82z"
-              clip-rule="evenodd"
-            />
-            <path
-              fill-rule="evenodd"
-              d="M12.786 1.072C11.188.752 9.084.71 7.646 2.146A.5.5 0 007.5 2.5v11a.5.5 0 00.854.354c.843-.844 2.115-1.059 3.47-.92 1.344.14 2.66.617 3.452 1.013A.5.5 0 0016 13.5v-11a.5.5 0 00-.276-.447L15.5 2.5l.224-.447-.002-.001-.004-.002-.013-.006-.047-.023a12.582 12.582 0 00-.799-.34 12.96 12.96 0 00-2.073-.609z"
-              clip-rule="evenodd"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+            <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0"/>
+            <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z"/>
           </svg>
-          Rajono biblioteka!</a
+          TimeManager</a
         >
         <button
           class="navbar-toggler"
@@ -65,7 +50,7 @@
 
             {% if user.is_authenticated %}
               <li class="nav-item">
-                <a href="" class="nav-link">
+                <a href="{% url 'profile' %}" class="nav-link">
                   <svg class="bi bi-person"
                          width="1.5em"
                          height="1.5em"
@@ -81,31 +66,28 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">Log out</a>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-light ">Log out</button>
+                </form>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="">Mano knygos</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="">Nauja</a>
+                <a class="btn btn-light" href="{% url 'customers' %}" role="button">Customers</a>
               </li>
             {% else %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'register-url' %}">Register</a>
+                <a class="btn btn-light" href="{% url 'register-url' %}" role="button">Register</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="">Prisijungti</a>
+                <a class="btn btn-light" href="{% url 'login' %}?next={{ request.path }}" role="button">Login</a>
               </li>
             {% endif %}
 
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'home' %}">Home</a>
+              <a class="btn btn-light" href="{% url 'home' %}" role="button">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'projects' %}">All projects</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="">Autoriai</a>
+              <a class="btn btn-light" href="{% url 'projects' %}" role="button">All projects</a>
             </li>
           </ul>
 
@@ -140,7 +122,7 @@
     <div class="container">{% block content %}{% endblock %}</div>
 
     <script
-      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      src="https:///jquery-3.5.1.slim.min.js"
       integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
       crossorigin="anonymous"
     ></script>
