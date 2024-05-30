@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>All workers</h1>
+
+
+{% for worker in worker_list %}
+<div>
+    <a href="{%url 'worker' worker.id%}">{{worker}}</a>
+</div>
+{% endfor %}
+
+{% endblock %}

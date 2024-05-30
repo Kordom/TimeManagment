@@ -14,20 +14,6 @@ from .forms import ProfileUpdateForm, UserUpdateForm
 
 
 # Create your views here.
-def index(request):
-    num_projects = Project.objects.count()
-    num_employee = Worker.objects.count()
-
-    num_visits = request.session.get('num_visits', 1)
-    request.session['num_visits'] = num_visits + 1
-    context = {'num_visits': num_visits,
-               'num_projects': num_projects,
-               'num_employee': num_employee,
-               }
-
-    return render(request, 'home.html', context=context)
-
-
 class ProjectListView(generic.ListView):
     model = Project
     context_object_name = 'project_list'
@@ -45,10 +31,37 @@ class CustomerDetailView(generic.DetailView):
     context_object_name = 'customer'
     template_name = 'customer.html'
 
+
 class CustomerListView(generic.ListView):
     model = Customer
     context_object_name = 'customer_list'
     template_name = 'customers.html'
+
+
+class WorkerListView(generic.ListView):
+    model = Worker
+    context_object_name = 'worker_list'
+    template_name = 'workers.html'
+
+
+class WorkerDetailView(generic.DetailView):
+    model = Worker
+    context_object_name = 'worker'
+    template_name = 'worker.html'
+
+
+def index(request):
+    num_projects = Project.objects.count()
+    num_employee = Worker.objects.count()
+
+    num_visits = request.session.get('num_visits', 1)
+    request.session['num_visits'] = num_visits + 1
+    context = {'num_visits': num_visits,
+               'num_projects': num_projects,
+               'num_employee': num_employee,
+               }
+
+    return render(request, 'home.html', context=context)
 
 
 def search(request):
@@ -121,7 +134,7 @@ def my_cabinet(request):
             messages.info(request, 'Profile has been updated')
         else:
             messages.warning(request, 'Error has occured')
-        return redirect('home')
+        return redirect('profile')
 
     p_form = ProfileUpdateForm(instance=request.user.profile)
     u_form = UserUpdateForm(instance=request.user)

@@ -24,6 +24,10 @@
             {%for group in user.groups.all%}
             {{group.name}}
             {% endfor %}
+            <br>
+            <b>Worker Role:</b> {{user.worker.role}}<br>
+            <b>Price per hour:</b> {{user.worker.price_per_hour}} €<br>
+            <b>Skills:</b> {{user.worker.skills}}
 
             {{ u_form | crispy }}
             {{ p_form | crispy }}

@@ -74,6 +74,14 @@
               <li class="nav-item">
                 <a class="btn btn-light" href="{% url 'customers' %}" role="button">Customers</a>
               </li>
+              {%for group in user.groups.all%}
+                {%if group.name == 'manager'%}
+                <li class="nav-item">
+                  <a class="btn btn-light" href="{% url 'workers' %}" role="button">All workers</a>
+                </li>
+                {%endif%}
+              {% endfor %}
+
             {% else %}
               <li class="nav-item">
                 <a class="btn btn-light" href="{% url 'register-url' %}" role="button">Register</a>
