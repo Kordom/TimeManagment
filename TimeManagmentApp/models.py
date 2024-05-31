@@ -8,8 +8,8 @@ class Project(models.Model):
     name = models.CharField('Project name', max_length=50)
     description = models.TextField('Project desription')
     place_city = models.CharField('City', max_length=50, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    project_start = models.DateTimeField()
+    project_end = models.DateTimeField()
     customer = models.ForeignKey('Customer', on_delete=models.SET_NULL, verbose_name='Customer', null=True, blank=True)
 
     def __str__(self):
@@ -24,10 +24,6 @@ class Worker(models.Model):
 
     AVAILABILITY_STATUS = (
         ('ISA', 'Available'),
-        ('ONV', 'On vacation'),
-        ('ONS', 'On working site'),
-        ('OFF', 'On the way home'),
-        ('ONW', 'On the way to work'),
         ('NOT', 'Not Available')
     )
 
@@ -37,7 +33,7 @@ class Worker(models.Model):
         default='NOT',
         help_text='Worker availability status'
     )
-
+    availability_date = models.DateField('Available From',null=True, blank=True)
     def __str__(self):
         return f"{self.user.username} {self.role} {self.price_per_hour} {self.status}"
 

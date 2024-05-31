@@ -21,13 +21,14 @@ class WorkerGroupTaskInline(admin.TabularInline):
 
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'created_at', 'updated_at', 'customer')
+    list_display = ('name', 'description', 'project_start','project_end', 'customer')
     inlines = (ProjectTaskInline, WorkerGroupTaskInline,)
 
 
 @admin.register(Worker)
 class WorkerAdmin(admin.ModelAdmin):
-    list_display = ('user', 'role', 'price_per_hour', 'skills', 'status')
+    list_display = ('user', 'role', 'price_per_hour', 'skills', 'status', 'availability_date')
+    list_editable = ('availability_date','status')
 
 
 @admin.register(Task)

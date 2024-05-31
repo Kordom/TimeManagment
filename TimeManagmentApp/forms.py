@@ -21,7 +21,6 @@ class WorkerGroupForm(forms.ModelForm):
         fields = ('project', 'vehicle', 'worker')
 
 
-
 class WorkerTaskForm(forms.ModelForm):
     class Meta:
         model = WorkerTask
@@ -38,6 +37,19 @@ class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
         fields = ['name', 'description', 'place_city', 'customer']
+
+
+class DateInput(forms.DateTimeInput):
+    input_type = 'datetime-local'
+
+
+class UserTaskCreateForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ('title', 'description', 'status', 'priority', 'due_date')
+        widgets = {
+            'due_date': DateInput(),
+        }
 
 
 WorkerGroupFormSet = inlineformset_factory(Worker, WorkerGroup, form=WorkerGroupForm, extra=2, can_delete=True)

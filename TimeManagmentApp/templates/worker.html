@@ -27,7 +27,11 @@
             <br>
             <b>Worker Role:</b> {{worker.role}}<br>
             <b>Price per hour:</b> {{worker.price_per_hour}} €<br>
-            <b>Skills:</b> {{worker.skills}}
+            <b>Skills:</b> {{worker.skills}}<br>
+            <b>Status:</b> {{worker.get_status_display}}<br>
+            {% for project in worker.workergroup_set.all %}
+            <b>Project assigned to:</b> {{project.project.name}}<br>
+            {% endfor %}
         </fieldset>
     </form>
 </div>
