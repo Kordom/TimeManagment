@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 import re
 from .models import *
-from .forms import ProfileUpdateForm, UserUpdateForm, WorkerAssignmentForm
+from .forms import *
 
 
 # Create your views here.
@@ -146,4 +146,54 @@ def my_cabinet(request):
         'u_form': u_form,
     }
     return render(request, 'profile.html', context=context)
+
+
+# def project_create(request):
+#     if request.method == 'POST':
+#         form = ProjectForm(request.POST)
+#         formset = TaskProjectFormSet(request.POST)
+#         formset2 = ProjectGroupFormSet(request.POST)
+#         if form.is_valid() and formset.is_valid() and formset2.is_valid():
+#             project = form.save()
+#             project_tasks = formset.save(commit=False)
+#             for project_task in project_tasks:
+#                 project_task.project = project
+#                 project_task.save()
+#             return redirect('projects')
+#     else:
+#         form = ProjectForm()
+#         formset = TaskProjectFormSet()
+#         formset2 = ProjectGroupFormSet()
+#     return render(request, 'assign_workers.html', {
+#         'form': form,
+#         'formset': formset,
+#         'formset2':formset2,
+#         })
+
+def assign_workers_to_project(request, pk):
+    project = get_object_or_404(Project, id=pk)
+    if request.method == 'POST':
+        form_group = WorkerGroupForm(request.POST)
+        formset_task = WorkerTaskFormset(request.POST)
+
+        if form_group.is_valid() and formset_task.is_valid():
+            worker_group = form_group.save(commit=False)
+            worker_group.project = project
+            worker_group.save()
+
+            worker_tasks = formset_task.save(commit=False)
+            for task in worker_tasks:
+                task.worker = worker_group.worker
+                task.save()
+
+            return redirect('projects')
+    else:
+        form_group = WorkerGroupForm()
+        formset_task = WorkerTaskFormset()
+
+    return render(request, 'assign_workers.html', {
+        'form_group': form_group,
+        'formset_task': formset_task,
+        'project': project,
+    })
 
