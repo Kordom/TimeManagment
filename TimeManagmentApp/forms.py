@@ -18,7 +18,11 @@ class UserUpdateForm(forms.ModelForm):
 class WorkerGroupForm(forms.ModelForm):
     class Meta:
         model = WorkerGroup
-        fields = ('project', 'vehicle', 'worker')
+        fields = ('project', 'vehicle',)
+
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args,**kwargs)
+    #     self.fields['project'].queryset = Project.objects.all()
 
 
 class WorkerTaskForm(forms.ModelForm):
@@ -30,7 +34,7 @@ class WorkerTaskForm(forms.ModelForm):
 class ProjectTaskForm(forms.ModelForm):
     class Meta:
         model = ProjectTask
-        fields = ('task', 'project')
+        fields = ('project',)
 
 
 class ProjectForm(forms.ModelForm):
@@ -39,8 +43,12 @@ class ProjectForm(forms.ModelForm):
         fields = ['name', 'description', 'place_city', 'customer']
 
 
-class DateInput(forms.DateTimeInput):
+class DateTimeInput(forms.DateTimeInput):
     input_type = 'datetime-local'
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 
 class UserTaskCreateForm(forms.ModelForm):
@@ -48,8 +56,21 @@ class UserTaskCreateForm(forms.ModelForm):
         model = Task
         fields = ('title', 'description', 'status', 'priority', 'due_date')
         widgets = {
-            'due_date': DateInput(),
+            'due_date': DateTimeInput(),
         }
+
+
+class UserWorkerCreateForm(forms.ModelForm):
+    class Meta:
+        model = Worker
+        fields = ('user', 'role', 'price_per_hour', 'skills', 'status', 'availability_date')
+        widgets = {
+            'availability_date': DateInput()
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['user'].queryset = User.objects.exclude(worker__isnull=False)
 
 
 WorkerGroupFormSet = inlineformset_factory(Worker, WorkerGroup, form=WorkerGroupForm, extra=2, can_delete=True)

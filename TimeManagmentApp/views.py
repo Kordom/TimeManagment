@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 import re
 from django.urls import reverse_lazy
 from .forms import *
@@ -119,7 +120,7 @@ def register_user(request):
         if messages.get_messages(request):
             return redirect('register-url')
 
-        User.objects.create_user(username=username, email=email, password=password)
+        User.objects.create_user(username=username, email=email, password=password).groups.add(Group.objects.get(id=2))
         messages.info(request, f'Your profile: {username}, {email}, successfully registered')
         return redirect('login')
 
@@ -198,16 +199,16 @@ def assign_workers_to_project(request, pk):
     })
 
 
+# class UserTaskCreateView(LoginRequiredMixin,UserPassesTestMixin, generic.CreateView):
 class UserTaskCreateView(LoginRequiredMixin, generic.CreateView):
     model = Task
-    # form_class = UserTaskCreateForm, ProjectTaskForm
     template_name = 'task_creation.html'
-    success_url = reverse_lazy('success_url_name')
+    success_url = reverse_lazy('projects')
 
     def get(self, request, *args, **kwargs):
         user_task_form = UserTaskCreateForm()
         project_task_form = ProjectTaskForm()
-        return self.render_forms(user_task_form,project_task_form)
+        return self.render_forms(user_task_form, project_task_form)
 
     def post(self, request, *args, **kwargs):
         user_task_form = UserTaskCreateForm(request.POST)
@@ -216,16 +217,14 @@ class UserTaskCreateView(LoginRequiredMixin, generic.CreateView):
         if user_task_form.is_valid() and project_task_form.is_valid():
             user_task = user_task_form.save(commit=False)
             user_task.user = request.user
-            # user_task.save()
-            print(user_task)
+            user_task.save()
 
             project_task_form = project_task_form.save(commit=False)
-            project_task_form.user = user_task
-            # project_task_form.save()
-            print(project_task_form)
+            project_task_form.task = user_task
+            project_task_form.save()
 
             return redirect(self.success_url)
-        return self.render_forms(user_task_form,project_task_form)
+        return self.render_forms(user_task_form, project_task_form)
 
     def render_forms(self, user_task_form, project_task_form):
         return render(self.request, self.template_name, {
@@ -234,7 +233,35 @@ class UserTaskCreateView(LoginRequiredMixin, generic.CreateView):
         })
 
 
-    # def form_valid(self, form):
-    #     # form.instance.reader = self.request.user
-    #     form.instance.status = 'ISA'
-    #     return super().form_valid(form)
+# class UserWorkerCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
+class UserWorkerCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Worker
+    template_name = 'worker_creation.html'
+    success_url = reverse_lazy('projects')
+
+    def get(self, request, *args, **kwargs):
+        user_worker_form = UserWorkerCreateForm()
+        worker_group_form = WorkerGroupForm()
+        return self.render_forms(user_worker_form, worker_group_form)
+
+    def post(self, request, *args, **kwargs):
+        user_worker_form = UserWorkerCreateForm(request.POST)
+        worker_group_form = WorkerGroupForm(request.POST)
+
+        if user_worker_form.is_valid() and worker_group_form.is_valid():
+            user_worker = user_worker_form.save(commit=False)
+            user_worker.user = request.user
+            user_worker.save()
+
+            worker_group = worker_group_form.save(commit=False)
+            worker_group.worker = user_worker
+            worker_group.save()
+
+            return redirect(self.success_url)
+        return self.render_forms(user_worker_form, worker_group_form)
+
+    def render_forms(self, user_worker_form, worker_group_form):
+        return render(self.request, self.template_name, {
+            'user_worker_form': user_worker_form,
+            'worker_group_form': worker_group_form,
+        })

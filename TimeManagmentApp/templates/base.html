@@ -22,7 +22,6 @@
     <!-- Add additional CSS in static file -->
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}"/>
-
 </head>
 <body>
 <!-- Navigation -->
@@ -49,6 +48,15 @@
                 <a class="nav-link" href="{% url 'projects' %}">All projects</a>
             </li>
             {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown01"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown01">
+              <a class="dropdown-item" href="{% url 'add-task' %}">Create Task</a>
+              <a class="dropdown-item" href="{% url 'add-worker' %}">Create Worker</a>
+              <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+          </li>
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'customers' %}">Customers</a>
             </li>
@@ -139,5 +147,9 @@
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"
 ></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 </body>
 </html>

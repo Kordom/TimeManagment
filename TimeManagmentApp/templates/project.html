@@ -9,6 +9,11 @@
     <h4>Project customer:</h4>{{project.customer.customer_name}}
     {% if user.is_authenticated %}
         <p>To know more about customer <a href="{% url 'customer' project.customer.id %}">press here</a></p>
+    <p>Assigned workers</p>
+    <p>{% for worker in project.workergroup_set.all %}</p>
+    <p><a href="{% url 'worker' worker.worker.id %}">{{worker.worker}}</a></p>
+    {{worker.vehicle}}
+    {% endfor %}
     {% endif %}
 
 </div>

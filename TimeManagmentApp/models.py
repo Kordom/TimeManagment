@@ -33,7 +33,8 @@ class Worker(models.Model):
         default='NOT',
         help_text='Worker availability status'
     )
-    availability_date = models.DateField('Available From',null=True, blank=True)
+    availability_date = models.DateField('Available From', null=True, blank=True)
+
     def __str__(self):
         return f"{self.user.username} {self.role} {self.price_per_hour} {self.status}"
 
@@ -125,4 +126,3 @@ class Profile(models.Model):
         thumb_size = (200, 200)
         img.thumbnail(thumb_size)
         img.save(self.picture.path)
-
