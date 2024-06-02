@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.views import generic
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
@@ -14,41 +14,46 @@ from django.urls import reverse_lazy
 from .forms import *
 
 
-# Create your views here.
-class ProjectListView(generic.ListView):
-    model = Project
-    context_object_name = 'project_list'
-    template_name = 'projects.html'
-
-
+# ONE PROJECT VIEW
 class ProjectDetailView(generic.DetailView):
     model = Project
     context_object_name = 'project'
     template_name = 'project.html'
 
 
+# ALL PROJECTS
+class ProjectListView(generic.ListView):
+    model = Project
+    context_object_name = 'project_list'
+    template_name = 'projects.html'
+
+
+# ONE CUSTOMER VIEW
 class CustomerDetailView(generic.DetailView):
     model = Customer
     context_object_name = 'customer'
     template_name = 'customer.html'
 
 
+# ALL CUSTOMER LIST
 class CustomerListView(LoginRequiredMixin, generic.ListView):
     model = Customer
     context_object_name = 'customer_list'
     template_name = 'customers.html'
 
 
-class WorkerListView(LoginRequiredMixin, generic.ListView):
-    model = Worker
-    context_object_name = 'worker_list'
-    template_name = 'workers.html'
-
-
+# ONE WORKER DETAILS
 class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Worker
     context_object_name = 'worker'
     template_name = 'worker.html'
+
+
+# ALL WORKER LIST
+class WorkerListView(LoginRequiredMixin, generic.ListView):
+    model = Worker
+    context_object_name = 'worker_list'
+    template_name = 'workers.html'
 
 
 # HOME SCREEN
@@ -199,11 +204,12 @@ def assign_workers_to_project(request, pk):
     })
 
 
+# TASK PROJECT CREATION PAGE
 # class UserTaskCreateView(LoginRequiredMixin,UserPassesTestMixin, generic.CreateView):
 class UserTaskCreateView(LoginRequiredMixin, generic.CreateView):
     model = Task
     template_name = 'task_creation.html'
-    success_url = reverse_lazy('projects')
+    success_url = reverse_lazy('add-task')
 
     def get(self, request, *args, **kwargs):
         user_task_form = UserTaskCreateForm()
@@ -223,6 +229,7 @@ class UserTaskCreateView(LoginRequiredMixin, generic.CreateView):
             project_task_form.task = user_task
             project_task_form.save()
 
+            messages.info(self.request, 'Task has been created')
             return redirect(self.success_url)
         return self.render_forms(user_task_form, project_task_form)
 
@@ -233,35 +240,70 @@ class UserTaskCreateView(LoginRequiredMixin, generic.CreateView):
         })
 
 
+# WORKER CREATION PAGE
 # class UserWorkerCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
 class UserWorkerCreateView(LoginRequiredMixin, generic.CreateView):
     model = Worker
     template_name = 'worker_creation.html'
-    success_url = reverse_lazy('projects')
+    form_class = UserWorkerCreateForm
+    success_url = reverse_lazy('add-worker')
+
+    def form_valid(self, form):
+        messages.info(self.request, 'Worker has been created')
+        return super().form_valid(form)
+
+
+class UserVehicleCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Vehicle
+    template_name = 'vehicle_creation.html'
+    form_class = UserVehicleCreateForm
+    success_url = reverse_lazy('add-vehicle')
+
+    def form_valid(self, form):
+        messages.info(self.request, 'Car has been added')
+        return super().form_valid(form)
+
+
+class UserWorkerGroupCreateView(LoginRequiredMixin, generic.CreateView):
+    model = WorkerGroup
+    template_name = 'assign_workers.html'
+    # form_class = WorkerGroupForm
+    success_url = reverse_lazy('assign-groups')
 
     def get(self, request, *args, **kwargs):
-        user_worker_form = UserWorkerCreateForm()
         worker_group_form = WorkerGroupForm()
-        return self.render_forms(user_worker_form, worker_group_form)
+        worker_task_form = WorkerTaskForm()
+        return self.render_forms(worker_group_form, worker_task_form)
 
     def post(self, request, *args, **kwargs):
-        user_worker_form = UserWorkerCreateForm(request.POST)
         worker_group_form = WorkerGroupForm(request.POST)
+        worker_task_form = WorkerTaskForm(request.POST)
 
-        if user_worker_form.is_valid() and worker_group_form.is_valid():
-            user_worker = user_worker_form.save(commit=False)
-            user_worker.user = request.user
-            user_worker.save()
-
+        if worker_group_form.is_valid() and worker_task_form.is_valid():
             worker_group = worker_group_form.save(commit=False)
-            worker_group.worker = user_worker
+            worker_group.user = request.user
             worker_group.save()
 
-            return redirect(self.success_url)
-        return self.render_forms(user_worker_form, worker_group_form)
+            worker_task = worker_task_form.save(commit=False)
+            worker_task.task = worker_group
+            worker_task.save()
 
-    def render_forms(self, user_worker_form, worker_group_form):
+            messages.info(self.request, 'Group has been assigned')
+            return redirect(self.success_url)
+        return self.render_forms(worker_group_form, worker_task_form)
+
+    def render_forms(self, worker_group_form, worker_task_form):
         return render(self.request, self.template_name, {
-            'user_worker_form': user_worker_form,
             'worker_group_form': worker_group_form,
+            'worker_task_form': worker_task_form,
         })
+
+class UserProjectCreateView(LoginRequiredMixin, generic.CreateView):
+    model = Project
+    template_name = 'project_creation.html'
+    form_class = ProjectForm
+    success_url = reverse_lazy('add-project')
+
+    def form_valid(self, form):
+        messages.info(self.request, 'Project has been added')
+        return super().form_valid(form)
