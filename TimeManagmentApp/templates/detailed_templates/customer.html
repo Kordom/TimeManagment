@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h1>{{customer.customer_name}}</h1>
+  <img class="rounded-circle account-img" src="{{ customer.picture.url }}" alt="Card image cap">
 <hr/>
 <div>
     <h4>Customer business number:</h4>{{customer.customer_number}}

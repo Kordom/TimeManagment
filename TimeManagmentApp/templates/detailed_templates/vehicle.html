@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="content-section">
+    <div class="media">
+        <img
+                class="rounded-circle account-img"
+                src="{{ vehicle.picture.url }}"
+        />
+        <div class="media-body">
+            <h2>{{vehicle.car_make}} {{vehicle.car_model}} {{vehicle.license_plate }}</h2>
+            Vehicle capacity<p class="text-secondary">{{ vehicle.capacity }} person</p>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

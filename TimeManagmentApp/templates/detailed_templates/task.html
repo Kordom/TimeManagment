@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>{{task.title}}</h1>
+<hr/>
+<div>
+    {% for projects in customer.project_set.all %}
+    <p><a href="{% url 'project' projects.id %}">{{projects.name}}</a></p>
+    {% endfor %}
+</div>
+
+<dl class="row">
+  <dt class="col-sm-3">Description </dt>
+  <dd class="col-sm-9">{{task.description}}</dd>
+
+  <dt class="col-sm-3">Status</dt>
+  <dd class="col-sm-9">
+    <p>{{task.status}}</p>
+  </dd>
+
+  <dt class="col-sm-3">Due date:</dt>
+  <dd class="col-sm-9">{{task.due_date}}</dd>
+
+
+    {% for person in task.workertask_set.all %}
+    <dt class="col-sm-3">Assigned person:</dt>
+    <dd class="col-sm-9">{{person.worker.user}} Role: {{person.worker.role}}</dd>
+    {% endfor %}
+
+</dl>
+{% endblock %}

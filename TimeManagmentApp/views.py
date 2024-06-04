@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Group
@@ -18,42 +18,70 @@ from .forms import *
 class ProjectDetailView(generic.DetailView):
     model = Project
     context_object_name = 'project'
-    template_name = 'project.html'
+    template_name = 'detailed_templates/project.html'
 
 
 # ALL PROJECTS
 class ProjectListView(generic.ListView):
     model = Project
     context_object_name = 'project_list'
-    template_name = 'projects.html'
+    template_name = 'list_templates/projects.html'
 
 
 # ONE CUSTOMER VIEW
 class CustomerDetailView(generic.DetailView):
     model = Customer
     context_object_name = 'customer'
-    template_name = 'customer.html'
+    template_name = 'detailed_templates/customer.html'
 
 
 # ALL CUSTOMER LIST
 class CustomerListView(LoginRequiredMixin, generic.ListView):
     model = Customer
     context_object_name = 'customer_list'
-    template_name = 'customers.html'
+    template_name = 'list_templates/customers.html'
 
 
 # ONE WORKER DETAILS
 class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
     model = Worker
     context_object_name = 'worker'
-    template_name = 'worker.html'
+    template_name = 'detailed_templates/worker.html'
 
 
 # ALL WORKER LIST
 class WorkerListView(LoginRequiredMixin, generic.ListView):
     model = Worker
     context_object_name = 'worker_list'
-    template_name = 'workers.html'
+    template_name = 'list_templates/workers.html'
+
+
+# ALL VEHICLES LIST
+class VehicleListView(LoginRequiredMixin, generic.ListView):
+    model = Vehicle
+    context_object_name = 'vehicles_list'
+    template_name = 'list_templates/vehicles.html'
+
+
+class VehicleDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Vehicle
+    context_object_name = 'vehicle'
+    template_name = 'detailed_templates/vehicle.html'
+
+
+class TaskListView(LoginRequiredMixin, generic.ListView):
+    model = Task
+    context_object_name = 'task_list'
+    template_name = 'list_templates/tasks.html'
+
+    def get_queryset(self):
+        return Task.objects.order_by('priority')
+
+
+class TasksDetailView(LoginRequiredMixin, generic.DetailView):
+    model = Task
+    context_object_name = 'task'
+    template_name = 'detailed_templates/task.html'
 
 
 # HOME SCREEN
@@ -154,61 +182,10 @@ def my_cabinet(request):
     return render(request, 'profile.html', context=context)
 
 
-# def project_create(request):
-#     if request.method == 'POST':
-#         form = ProjectForm(request.POST)
-#         formset = TaskProjectFormSet(request.POST)
-#         formset2 = ProjectGroupFormSet(request.POST)
-#         if form.is_valid() and formset.is_valid() and formset2.is_valid():
-#             project = form.save()
-#             project_tasks = formset.save(commit=False)
-#             for project_task in project_tasks:
-#                 project_task.project = project
-#                 project_task.save()
-#             return redirect('projects')
-#     else:
-#         form = ProjectForm()
-#         formset = TaskProjectFormSet()
-#         formset2 = ProjectGroupFormSet()
-#     return render(request, 'assign_workers.html', {
-#         'form': form,
-#         'formset': formset,
-#         'formset2':formset2,
-#         })
-
-def assign_workers_to_project(request, pk):
-    project = get_object_or_404(Project, id=pk)
-    if request.method == 'POST':
-        form_group = WorkerGroupForm(request.POST)
-        formset_task = WorkerTaskFormset(request.POST)
-
-        if form_group.is_valid() and formset_task.is_valid():
-            worker_group = form_group.save(commit=False)
-            worker_group.project = project
-            worker_group.save()
-
-            worker_tasks = formset_task.save(commit=False)
-            for task in worker_tasks:
-                task.worker = worker_group.worker
-                task.save()
-
-            return redirect('projects')
-    else:
-        form_group = WorkerGroupForm()
-        formset_task = WorkerTaskFormset()
-
-    return render(request, 'assign_workers.html', {
-        'form_group': form_group,
-        'formset_task': formset_task,
-        'project': project,
-    })
-
-
 # TASK PROJECT CREATION PAGE
-# class UserTaskCreateView(LoginRequiredMixin,UserPassesTestMixin, generic.CreateView):
 class UserTaskCreateView(LoginRequiredMixin, generic.CreateView):
     model = Task
-    template_name = 'task_creation.html'
+    template_name = 'creation/task_creation.html'
     success_url = reverse_lazy('add-task')
 
     def get(self, request, *args, **kwargs):
@@ -244,7 +221,7 @@ class UserTaskCreateView(LoginRequiredMixin, generic.CreateView):
 # class UserWorkerCreateView(LoginRequiredMixin, UserPassesTestMixin, generic.CreateView):
 class UserWorkerCreateView(LoginRequiredMixin, generic.CreateView):
     model = Worker
-    template_name = 'worker_creation.html'
+    template_name = 'creation/worker_creation.html'
     form_class = UserWorkerCreateForm
     success_url = reverse_lazy('add-worker')
 
@@ -255,7 +232,7 @@ class UserWorkerCreateView(LoginRequiredMixin, generic.CreateView):
 
 class UserVehicleCreateView(LoginRequiredMixin, generic.CreateView):
     model = Vehicle
-    template_name = 'vehicle_creation.html'
+    template_name = 'creation/vehicle_creation.html'
     form_class = UserVehicleCreateForm
     success_url = reverse_lazy('add-vehicle')
 
@@ -265,8 +242,8 @@ class UserVehicleCreateView(LoginRequiredMixin, generic.CreateView):
 
 
 class UserWorkerGroupCreateView(LoginRequiredMixin, generic.CreateView):
-    model = WorkerGroup
-    template_name = 'assign_workers.html'
+    # model = WorkerGroup
+    template_name = 'creation/assign_workers.html'
     # form_class = WorkerGroupForm
     success_url = reverse_lazy('assign-groups')
 
@@ -285,7 +262,8 @@ class UserWorkerGroupCreateView(LoginRequiredMixin, generic.CreateView):
             worker_group.save()
 
             worker_task = worker_task_form.save(commit=False)
-            worker_task.task = worker_group
+            worker_task.worker_group = worker_group
+            worker_task.worker_id = worker_group.worker.id
             worker_task.save()
 
             messages.info(self.request, 'Group has been assigned')
@@ -298,12 +276,86 @@ class UserWorkerGroupCreateView(LoginRequiredMixin, generic.CreateView):
             'worker_task_form': worker_task_form,
         })
 
+
 class UserProjectCreateView(LoginRequiredMixin, generic.CreateView):
     model = Project
-    template_name = 'project_creation.html'
+    template_name = 'creation/project_creation.html'
     form_class = ProjectForm
     success_url = reverse_lazy('add-project')
 
     def form_valid(self, form):
         messages.info(self.request, 'Project has been added')
         return super().form_valid(form)
+
+
+class UserProjectUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Project
+    form_class = ProjectPictureUpdateForm
+    template_name = 'updation/project_updation.html'
+    success_url = reverse_lazy('projects')
+
+    def form_valid(self, form):
+        messages.info(self.request, f'{self.object.name} project has been updated')
+        return super().form_valid(form)
+
+
+class UserCustomerUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Customer
+    form_class = CustomerUpdateForm
+    template_name = 'updation/customer_updation.html'
+    success_url = reverse_lazy('customers')
+
+    def form_valid(self, form):
+        messages.info(self.request, f'{self.object.customer_name} information has been updated')
+        return super().form_valid(form)
+
+
+class UserWorkerUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Worker
+    form_class = WorkerUpdateForm
+    template_name = 'updation/worker_updation.html'
+    success_url = reverse_lazy('workers')
+
+    def form_valid(self, form):
+        messages.info(self.request, f'{self.object.user} information has been updated')
+        return super().form_valid(form)
+
+
+class UserVehicleUpdateView(LoginRequiredMixin, generic.UpdateView):
+    model = Vehicle
+    form_class = UserVehicleCreateForm
+    template_name = 'updation/vehicle_updation.html'
+    success_url = reverse_lazy('vehicles')
+
+    def form_valid(self, form):
+        messages.info(self.request, f'{self.object.license_plate} information has been updated')
+        return super().form_valid(form)
+
+
+class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+    model = Worker
+    template_name = 'deletion/worker_deletion.html'
+    success_url = reverse_lazy('workers')
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='manager').exists()
+
+
+class UserTaskDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+    model = Task
+    template_name = 'deletion/task_deletion.html'
+    success_url = reverse_lazy('tasks')
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='manager').exists()
+
+
+class UserTaskManager(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+    model = WorkerTask
+    form_class = ManagerWorkerTaskForm
+    template_name = 'taskmanager.html'
+    success_url = reverse_lazy('tasks')
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='manager').exists()
+

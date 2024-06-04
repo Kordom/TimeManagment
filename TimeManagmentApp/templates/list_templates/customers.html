@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>All customers</h1>
+<hr>
+{% load static %}
+<link href="{% static 'css/album.css' %}" rel="stylesheet"/>
+
+<body>
+  <main role="main">
+    <div class="album py-5 custom-bg">
+
+      <div class="container">
+        <div class="row">
+          {% for customer_obj in customer_list %}
+            <div class="col-md-4 d-flex">
+              <div class="card mb-4 box-shadow">
+                <img class="card-img-top" src="{{ customer_obj.picture.url }}" alt="Card image cap">
+                <div class="card-body">
+                  <p class="card-text">{{ customer_obj.customer_name }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'customer' customer_obj.id %}">View</a>
+                      <a class="btn btn-sm btn-outline-secondary" href="{% url 'customer-update' customer_obj.id %}">Edit</a>
+                    </div>
+                    <small class="text-muted">Main office: {{ customer_obj.customer_main_office }} </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div> <!-- /.row -->
+      </div> <!-- /.container -->
+    </div> <!-- /.album -->
+  </main>
+</body>
+
+    <footer class="text-muted">
+      <div class="container">
+        <p class="float-right">
+          <a href="#">Back to top</a>
+      </div>
+    </footer>
+
+
+
+{% endblock %}

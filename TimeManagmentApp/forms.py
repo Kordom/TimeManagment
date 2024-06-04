@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.models import inlineformset_factory
 from .models import *
+from django.db.models import Q
 
 
 class DateTimeInput(forms.DateTimeInput):
@@ -30,14 +31,20 @@ class WorkerGroupForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['worker'].queryset = Worker.objects.exclude(workergroup__isnull=False)
-        self.fields['vehicle'].queryset = Vehicle.objects.exclude(workergroup__isnull=False)
+        self.fields['worker'].queryset = Worker.objects.exclude(
+            Q(workergroup__isnull=False) | Q(status__icontains='NOT'))
 
 
 class WorkerTaskForm(forms.ModelForm):
     class Meta:
         model = WorkerTask
         fields = ('task',)
+
+
+class ManagerWorkerTaskForm(forms.ModelForm):
+    class Meta:
+        model = WorkerTask
+        fields = ('worker', 'task')
 
 
 class ProjectTaskForm(forms.ModelForm):
@@ -53,6 +60,37 @@ class ProjectForm(forms.ModelForm):
         widgets = {
             'project_start': DateInput(),
             'project_end': DateInput(),
+        }
+
+
+class WorkerFilterForm(forms.Form):
+    status = forms.CharField(required=False, label='Status')
+    date_joined = forms.DateField(required=False, label='Date Joined',
+                                  widget=forms.DateInput(attrs={'type': 'date'}))
+
+
+class ProjectPictureUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = ['name', 'description', 'place_city', 'customer', 'project_start', 'project_end', 'picture']
+        widgets = {
+            'project_start': DateInput(),
+            'project_end': DateInput(),
+        }
+
+
+class CustomerUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = '__all__'
+
+
+class WorkerUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Worker
+        fields = '__all__'
+        widgets = {
+            'availability_date': DateInput()
         }
 
 
@@ -81,7 +119,13 @@ class UserWorkerCreateForm(forms.ModelForm):
 class UserVehicleCreateForm(forms.ModelForm):
     class Meta:
         model = Vehicle
-        fields = ('license_plate', 'car_model', 'car_make', 'capacity')
+        fields = ('license_plate', 'car_model', 'car_make', 'capacity', 'picture')
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = '__all__'
 
 
 WorkerGroupFormSet = inlineformset_factory(Worker, WorkerGroup, form=WorkerGroupForm, extra=2, can_delete=True)

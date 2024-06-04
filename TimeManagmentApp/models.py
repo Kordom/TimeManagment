@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from PIL import Image
-
+import datetime
+from django.utils import timezone
 
 class Project(models.Model):
     name = models.CharField('Project name', max_length=50)
@@ -12,8 +13,17 @@ class Project(models.Model):
     project_end = models.DateTimeField()
     customer = models.ForeignKey('Customer', on_delete=models.SET_NULL, verbose_name='Customer', null=True, blank=True)
 
+    picture = models.ImageField(upload_to='project_pics', blank=True, default='no-image.png')
+
     def __str__(self):
         return f'{self.name} {self.place_city} {self.description[:30]}'
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        img = Image.open(self.picture.path)
+        thumb_size = (200, 200)
+        img.thumbnail(thumb_size)
+        img.save(self.picture.path)
 
 
 class Worker(models.Model):
@@ -44,10 +54,15 @@ class Vehicle(models.Model):
     car_model = models.CharField('Car model', max_length=50)
     car_make = models.CharField('Car make', max_length=50)
     capacity = models.IntegerField('Capacity (1-8)', validators=[MaxValueValidator(8), MinValueValidator(1)])
-
+    picture = models.ImageField(upload_to='vehicle_pics', blank=True, default='no-image.png')
     def __str__(self):
         return f'{self.car_make} {self.car_model} {self.license_plate} {self.capacity}'
-
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # numatytieji Model klases veiksmai suvykdomi
+        img = Image.open(self.picture.path)
+        thumb_size = (200, 200)
+        img.thumbnail(thumb_size)
+        img.save(self.picture.path)
 
 class Task(models.Model):
     title = models.CharField('Task name', max_length=255)
@@ -68,6 +83,13 @@ class Task(models.Model):
     def __str__(self):
         return f"{self.title} Priority: {self.priority}"
 
+    @property
+    def is_overdue(self):
+        if self.due_date and timezone.make_aware(datetime.datetime.now()) > self.due_date:
+            return True
+        else:
+            return False
+
 
 class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -84,8 +106,17 @@ class Customer(models.Model):
     customer_number = models.CharField('Customer number', max_length=50, null=True)
     customer_main_office = models.CharField('Customer main office', max_length=50, null=True)
 
+    picture = models.ImageField(upload_to='customer_pics', blank=True, default='no-image.png')
+
     def __str__(self):
         return f"{self.customer_name} {self.customer_number}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # numatytieji Model klases veiksmai suvykdomi
+        img = Image.open(self.picture.path)
+        thumb_size = (200, 200)
+        img.thumbnail(thumb_size)
+        img.save(self.picture.path)
 
 
 class WorkerGroup(models.Model):

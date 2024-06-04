@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block content %}
+<h1>Tasks</h1>
+<hr>
+{% load static %}
+<link href="{% static 'css/album.css' %}" rel="stylesheet"/>
+
+<body>
+  <main role="main">
+    <div class="album py-5 custom-bg ">
+
+      <div class="container">
+          {% for tasks in task_list %}
+
+                {{ task}}
+                <div class="card-body">
+                  <p class="card-text">{{ tasks }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'task' tasks.id %}">View</a>
+                        {% if tasks.status != 'DONE' %}
+                        {% for task in tasks.workertask_set.all|unique_tasks %}
+
+                        <a class="btn btn-sm btn-outline-info" href="{% url 'taskmanager' task.id %}">Manage Task</a>
+                        {% endfor %}
+
+                          <a class="btn btn-sm btn-outline-danger" href="{% url 'done-task' tasks.id %}">Delete</a>
+
+                        {% else %}
+                          <a class="btn btn-sm btn-outline-success" href="{% url 'done-task' tasks.id %}">Make It Done</a>
+
+                        {% endif %}
+                    </div>
+                      <p>Task priority: {{ tasks.priority }} </p>
+                      <p class="{% if tasks.is_overdue %} text-danger
+                                {% else %} text-success
+                                {% endif %}">
+                          Due to: {{ tasks.due_date }} </p>
+                      <p class="text-muted">Status {{ tasks.status }}</p>
+
+                  </div>
+                </div>
+
+          {% endfor %}
+
+      </div> <!-- /.container -->
+    </div> <!-- /.album -->
+  </main>
+</body>
+
+    <footer class="text-muted">
+      <div class="container">
+        <p class="float-right">
+          <a href="#">Back to top</a>
+      </div>
+    </footer>
+
+
+
+
+{% endblock %}

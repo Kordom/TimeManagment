@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>All workers</h1>
+<hr>
+{% load static %}
+<link href="{% static 'css/album.css' %}" rel="stylesheet"/>
+
+<body>
+  <main role="main">
+    <div class="album py-5 custom-bg ">
+
+      <div class="container">
+        <div class="row">
+          {% for worker in worker_list %}
+            <div class="col-md-4 d-flex">
+              <div class="card mb-4 box-shadow ">
+                <img class="card-img-top" src="{{ worker.user.profile.picture.url }}" alt="Card image cap">
+                <div class="card-body">
+                  <p class="card-text">{{ worker.user }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="btn-group">
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'worker' worker.id %}">View</a>
+                        <a class="btn btn-sm btn-outline-secondary" href="{% url 'worker-update' worker.id %}">Edit</a>
+                          <a href="{% url 'worker-delete' worker.id %}" class="btn btn-sm btn-outline-danger">
+                              Delete
+                            </a>
+                    </div>
+                    <small class="text-muted">Date joined: {{ worker.user.date_joined }} </small>
+                    <small class="text-muted">Status {{ worker.status }} </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div> <!-- /.row -->
+      </div> <!-- /.container -->
+    </div> <!-- /.album -->
+  </main>
+</body>
+
+    <footer class="text-muted">
+      <div class="container">
+        <p class="float-right">
+          <a href="#">Back to top</a>
+      </div>
+    </footer>
+
+
+
+
+{% endblock %}

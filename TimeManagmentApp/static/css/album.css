@@ -6,7 +6,7 @@
   padding-top: var(--jumbotron-padding-y);
   padding-bottom: var(--jumbotron-padding-y);
   margin-bottom: 0;
-  background-color: #fff;
+  background-color: #dbdad9;
 }
 @media (min-width: 768px) {
   .jumbotron {
@@ -37,3 +37,25 @@ footer p {
 }
 
 .box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
+
+
+.custom-bg {
+background-color: #e9ecef;
+}
+
+.card-body {
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 15px;
+    height: 150px; /* Adjust as needed */
+}
+.card-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card-img-top {
+    object-fit: cover;
+    height: 200px; /* Adjust as needed */
+}

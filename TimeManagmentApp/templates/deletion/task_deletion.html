@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+    <form method="post" >
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Workers assigned to this task will lose this task</legend>
+            {% for worker in task.workertask_set.all %}
+            {{ worker }}<br>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-outline-danger">Are you sure you want to remove this task?</button>
+             <a class="btn btn-outline-info" href="{% url 'tasks' %}">Cancel</a>
+        </fieldset>
+    </form>
+{% endblock %}

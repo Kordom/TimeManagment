@@ -2,7 +2,7 @@ body {
   padding-top: 4.0rem;
 }
 body {
-    background-color: #dccce3
+    background-color: #fffdfc
 }
 
 .sidebar-nav {
@@ -22,4 +22,6 @@ height: 75%;
 object-fit: contain;
 }
 
-
+.custom-bg {
+  background-color: #e9ecef;
+}
