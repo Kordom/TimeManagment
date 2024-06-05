@@ -21,10 +21,13 @@
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
                         <a class="btn btn-sm btn-outline-secondary" href="{% url 'project' project.id %}">View</a>
+                      {% load custom_filters %}
                       {% if user.is_authenticated %}
+                      {% if user|in_group:'manager' %}
                       <a class="btn btn-sm btn-outline-secondary" href="{% url 'project-update' project.id %}">
                           Edit
                         </a>
+                      {% endif %}
                       {% endif %}
                     </div>
                     <small class="text-muted">Start Date: {{project.project_start}}</small>

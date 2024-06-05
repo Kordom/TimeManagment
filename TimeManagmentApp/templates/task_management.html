@@ -3,23 +3,26 @@
 {% block content %}
 {% load static %}
 <link href="{% static 'css/bg.css' %}" rel="stylesheet"/>
+
+<form method="post">
+    {% csrf_token %}
 <main role="main">
     <div class="container">
         <div class="custom-bg py-5 col">
-            <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
                             <fieldset class="form-group" >
-                                <legend class="border-bottom mb-4">Update worker</legend>
-                                {{ worker_update_form|crispy }}
-                                {{ user_form|crispy }}
+                                <legend class="border-bottom mb-4">Assign people to a task</legend>
+                                {{ formset|crispy }}
+
                             </fieldset>
                             <div class="form-group">
                                 <button class="btn btn-outline-info" type="submit">Update</button>
-                                <a class="btn btn-outline-secondary" href="{% url 'workers' %}">Return</a>
+                                <a class="btn btn-outline-secondary" href="{% url 'tasks' %}">Return</a>
                             </div>
-                        </form>
+
                     </div>
                 </div>
-    </main>
-{% endblock %}
 
+        </main>
+</form>
+
+{% endblock %}

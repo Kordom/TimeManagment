@@ -47,7 +47,9 @@
             <li class="nav-item active">
                 <a class="nav-link" href="{% url 'projects' %}">All projects</a>
             </li>
-            {% if user.is_authenticated %}
+            {% load custom_filters %}
+            {% if user.is_authenticated%}
+            {% if user|in_group:'manager' %}
             <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown01"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Manage</a>
@@ -59,7 +61,7 @@
               <a class="dropdown-item" href="{% url 'assign-groups' %}">Assign Workers</a>
             </div>
           </li>
-
+            {% endif %}
             <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="dropdown02"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">View</a>
@@ -69,6 +71,8 @@
                 {%if group.name == 'manager'%}
                 <a class="dropdown-item" href="{% url 'vehicles' %}">All vehicles</a>
                 <a class="dropdown-item" href="{% url 'workers' %}">All workers</a>
+                <a class="dropdown-item" href="{% url 'tasks' %}">All tasks</a>
+                {% elif group.name == 'worker'%}
                 <a class="dropdown-item" href="{% url 'tasks' %}">All tasks</a>
                 {%endif%}
                 {% endfor %}

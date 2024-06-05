@@ -11,26 +11,37 @@
     <div class="album py-5 custom-bg ">
 
       <div class="container">
+          {% if task_list %}
           {% for tasks in task_list %}
-
                 {{ task}}
                 <div class="card-body">
                   <p class="card-text">{{ tasks }}</p>
+
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
                         <a class="btn btn-sm btn-outline-secondary" href="{% url 'task' tasks.id %}">View</a>
-                        {% if tasks.status != 'DONE' %}
-                        {% for task in tasks.workertask_set.all|unique_tasks %}
+                        {% if user|in_group:'manager' %}
 
-                        <a class="btn btn-sm btn-outline-info" href="{% url 'taskmanager' task.id %}">Manage Task</a>
-                        {% endfor %}
+                        {% if tasks.status != 'DONE' %}
+                            {% for task in tasks.workertask_set.all|unique_tasks %}
+                        <a class="btn btn-sm btn-outline-info" href="{% url 'task_management' tasks.id %}">Manage Task</a>
+                            {% endfor %}
 
                           <a class="btn btn-sm btn-outline-danger" href="{% url 'done-task' tasks.id %}">Delete</a>
 
                         {% else %}
                           <a class="btn btn-sm btn-outline-success" href="{% url 'done-task' tasks.id %}">Make It Done</a>
-
                         {% endif %}
+                        {% else %}
+                        {% if user|in_group:'worker' %}
+                    <a class="btn btn-sm btn-outline-info" href="{% url 'change_task_status' tasks.id 'INPS' %}">Start Task</a>
+                    <a class="btn btn-sm btn-outline-success" href="{% url 'change_task_status' tasks.id 'DONE' %}">Complete Task</a>
+                    <a class="btn btn-sm btn-outline-warning" href="{% url 'change_task_status' tasks.id 'TODO' %}">To DO</a>
+                {% endif %}
+                        <a class="btn btn-sm btn-outline-info" href="">Add a comment</a>
+                        {% endif %}
+
+
                     </div>
                       <p>Task priority: {{ tasks.priority }} </p>
                       <p class="{% if tasks.is_overdue %} text-danger
@@ -43,7 +54,9 @@
                 </div>
 
           {% endfor %}
-
+{% else %}
+        <p>No tasks assigned to you at the moment.</p>
+      {% endif %}
       </div> <!-- /.container -->
     </div> <!-- /.album -->
   </main>

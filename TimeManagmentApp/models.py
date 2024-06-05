@@ -5,6 +5,7 @@ from PIL import Image
 import datetime
 from django.utils import timezone
 
+
 class Project(models.Model):
     name = models.CharField('Project name', max_length=50)
     description = models.TextField('Project desription')
@@ -55,14 +56,24 @@ class Vehicle(models.Model):
     car_make = models.CharField('Car make', max_length=50)
     capacity = models.IntegerField('Capacity (1-8)', validators=[MaxValueValidator(8), MinValueValidator(1)])
     picture = models.ImageField(upload_to='vehicle_pics', blank=True, default='no-image.png')
+
     def __str__(self):
         return f'{self.car_make} {self.car_model} {self.license_plate} {self.capacity}'
+
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)  # numatytieji Model klases veiksmai suvykdomi
         img = Image.open(self.picture.path)
         thumb_size = (200, 200)
         img.thumbnail(thumb_size)
         img.save(self.picture.path)
+
+    @property
+    def is_full(self):
+        if self.capacity < self.workergroup_set.worker.objects.count():
+            return True
+        else:
+            return False
+
 
 class Task(models.Model):
     title = models.CharField('Task name', max_length=255)

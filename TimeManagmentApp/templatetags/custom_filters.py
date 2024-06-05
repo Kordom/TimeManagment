@@ -23,3 +23,8 @@ def unique_tasks(workertask):
             unique_workertask.append(ut)
             seen_task.add(ut.task)
     return unique_workertask
+
+
+@register.filter(name='in_group')
+def in_group(user, group_name):
+    return user.groups.filter(name=group_name).exists()
