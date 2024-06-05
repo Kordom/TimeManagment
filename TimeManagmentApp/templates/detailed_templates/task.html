@@ -26,6 +26,36 @@
     <dt class="col-sm-3">Assigned person:</dt>
     <dd class="col-sm-9">{{person.worker.user}} Role: {{person.worker.role}}</dd>
     {% endfor %}
-
 </dl>
+{% load custom_filters %}
+    {% if user|in_group:'worker' %}
+<div class="container">
+  {% if user.is_authenticated %}
+    <div>
+        <h5>Leave a Comment</h5>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.content }}
+            <div>
+                <input type="submit" class="btn btn-outline-success btn-sm" value="Save Comment"/>
+            </div>
+        </form>
+    </div>
+    <hr>
+  {% endif %}
+{% endif %}
+   <h5>Comments:</h5>
+  {% if task.comment_set.all %}
+    {% for comment in task.comment_set.all %}
+      <hr>
+      <small><b>{{ comment.author }}</b> <em>{{ comment.date_created }}:</em></small>
+      <p class="bg-light">{{ comment.content }}</p>
+    {% endfor %}
+  {% else %}
+    <p>No comments on this task</p>
+  {% endif %}
+</div>
+
+
+
 {% endblock %}

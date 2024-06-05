@@ -38,7 +38,7 @@
                     <a class="btn btn-sm btn-outline-success" href="{% url 'change_task_status' tasks.id 'DONE' %}">Complete Task</a>
                     <a class="btn btn-sm btn-outline-warning" href="{% url 'change_task_status' tasks.id 'TODO' %}">To DO</a>
                 {% endif %}
-                        <a class="btn btn-sm btn-outline-info" href="">Add a comment</a>
+                        <a class="btn btn-sm btn-outline-info" href="{% url 'task' tasks.id %}">Add a comment</a>
                         {% endif %}
 
 

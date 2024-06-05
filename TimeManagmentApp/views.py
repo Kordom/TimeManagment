@@ -315,14 +315,29 @@ def change_task_status(request, task_id, new_status):
         return redirect('tasks')
 
 
-class TasksDetailView(LoginRequiredMixin, generic.DetailView):
+class TasksDetailView(LoginRequiredMixin, generic.DetailView, generic.edit.FormMixin, ):
     """
     Task detalized view for one Task
     """
     model = Task
     context_object_name = 'task'
     template_name = 'detailed_templates/task.html'
+    form_class = TaskReviewForm
 
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = TaskReviewForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.task = self.object
+            comment.author = request.user
+            comment.save()
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse('task', kwargs={'pk': self.object.pk})
 
 
 class UserTaskCreateView(LoginRequiredMixin, generic.CreateView):

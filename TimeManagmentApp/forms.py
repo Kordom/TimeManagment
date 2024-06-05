@@ -213,7 +213,7 @@ class AddWorkerForm(forms.Form):
 class TaskReviewForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ('author', 'content',)
+        fields = ('content',)
 
 
 WorkerGroupFormSet = inlineformset_factory(Worker, WorkerGroup, form=WorkerGroupForm, extra=2, can_delete=True)
