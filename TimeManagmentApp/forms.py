@@ -62,6 +62,16 @@ class WorkerGroupForm(forms.ModelForm):
         self.fields['worker'].queryset = Worker.objects.exclude(
             Q(workergroup__isnull=False) | Q(status__icontains='NOT'))
 
+        all_vehicles = Vehicle.objects.all()
+        # Filter out full vehicles and get their IDs
+        non_full_vehicle_ids = [vehicle.pk for vehicle in all_vehicles if not vehicle.is_full]
+
+        # Filter vehicles queryset based on non-full vehicle IDs
+        non_full_vehicles_queryset = Vehicle.objects.filter(pk__in=non_full_vehicle_ids)
+
+        # Update queryset for the vehicle field
+        self.fields['vehicle'].queryset = non_full_vehicles_queryset
+
 
 class WorkerTaskForm(forms.ModelForm):
     """

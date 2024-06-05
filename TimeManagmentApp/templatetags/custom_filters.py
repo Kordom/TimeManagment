@@ -25,6 +25,17 @@ def unique_tasks(workertask):
     return unique_workertask
 
 
+@register.filter
+def unique_projects(workergroups):
+    seen_project = set()
+    unique_project = []
+    for sp in workergroups:
+        if sp.project not in seen_project:
+            unique_project.append(sp)
+            seen_project.add(sp.project)
+    return unique_project
+
+
 @register.filter(name='in_group')
 def in_group(user, group_name):
     return user.groups.filter(name=group_name).exists()

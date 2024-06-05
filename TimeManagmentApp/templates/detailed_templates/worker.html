@@ -33,6 +33,9 @@
             {% for project in worker.workergroup_set.all %}
             <b>Project assigned to:</b> {{project.project.name}}<br>
             {% endfor %}
+            {% for tasks in worker.workertask_set.all %}
+            <b>Assigned Tasks:</b> {{tasks.task}}<br>
+            {% endfor %}
         </fieldset>
     </form>
 </div>

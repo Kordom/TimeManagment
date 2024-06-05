@@ -9,11 +9,44 @@
                 src="{{ vehicle.picture.url }}"
         />
         <div class="media-body">
-            <h2>{{vehicle.car_make}} {{vehicle.car_model}} {{vehicle.license_plate }}</h2>
-            Vehicle capacity<p class="text-secondary">{{ vehicle.capacity }} person</p>
+            <p class="text-secondary">{{vehicle.car_make}}</p>
+            <p class="text-secondary">{{vehicle.car_model}} </p>
+            <p class="text-secondary">{{vehicle.license_plate }}</p>
         </div>
-
     </div>
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Vehicle info</legend>
+        <b>Vehicle capacity:</b>
+        <p class="text-secondary">{{ vehicle.capacity }} person</p>
+        <b>Assigned workers:</b>
+        {% for worker_group in vehicle.workergroup_set.all %}
+            <p>{{ worker_group.worker }}</p>
+        {% empty %}
+            <p>No workers assigned to this vehicle</p>
+        {% endfor %}
+
+        {% load custom_filters %}
+        <b>Assigned project:</b>
+        {% for vehicle in vehicle.workergroup_set.all|unique_projects %}
+             <p>{{ vehicle.project }}</p>
+        {% empty %}
+            <p>No projects assigned to this vehicle</p>
+        {% endfor %}
+
+        <b>Number of workers:</b>
+        <p>{{ vehicle.num_workers }}</p>
+        <b>Is vehicle full:</b>
+        {% if vehicle.is_full %}
+            <p>Yes</p>
+        {% else %}
+            <p>No</p>
+        {% endif %}
+        <br>
+        {{ u_form | crispy }}
+        {{ p_form | crispy }}
+    </fieldset>
 
 </div>
+
+
 {% endblock %}

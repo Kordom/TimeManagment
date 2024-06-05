@@ -71,7 +71,7 @@ class Vehicle(models.Model):
         return f'{self.car_make} {self.car_model} {self.license_plate} {self.capacity}'
 
     def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)  # numatytieji Model klases veiksmai suvykdomi
+        super().save(*args, **kwargs)
         img = Image.open(self.picture.path)
         thumb_size = (200, 200)
         img.thumbnail(thumb_size)
@@ -79,11 +79,11 @@ class Vehicle(models.Model):
 
     @property
     def is_full(self):
-        if self.capacity < self.workergroup_set.worker.objects.count():
-            return True
-        else:
-            return False
+        return self.capacity <= self.workergroup_set.count()
 
+    @property
+    def num_workers(self):
+        return self.workergroup_set.count()
 
 class Task(models.Model):
     title = models.CharField('Task name', max_length=255)

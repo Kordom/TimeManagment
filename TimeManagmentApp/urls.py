@@ -19,6 +19,9 @@ urlpatterns = [
     path('tasks/delete/<int:pk>/', views.UserTaskDeleteView.as_view(), name='done-task'),
     path('tasks/<int:task_id>/change_status/<str:new_status>/', views.change_task_status, name='change_task_status'),
     path('task/<int:task_id>/manage/', views.TaskManagementView.as_view(), name='task_management'),
+    path('groups/', views.WorkerGroupListView.as_view(), name='groups'),
+    path('groups/delete/<int:pk>', views.WorkerGroupDeleteView.as_view(), name='group-delete'),
+
 
     path('createtask/', views.UserTaskCreateView.as_view(), name='add-task'),
     path('createproject/', views.UserProjectCreateView.as_view(), name='add-project'),

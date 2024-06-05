@@ -16,7 +16,9 @@
                 {{ task}}
                 <div class="card-body">
                   <p class="card-text">{{ tasks }}</p>
-
+                    {% for project in tasks.projecttask_set.all%}
+                    {{project.project.name}}
+                    {% endfor %}
                   <div class="d-flex justify-content-between align-items-center">
                     <div class="btn-group">
                         <a class="btn btn-sm btn-outline-secondary" href="{% url 'task' tasks.id %}">View</a>

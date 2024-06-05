@@ -72,6 +72,7 @@
                 <a class="dropdown-item" href="{% url 'vehicles' %}">All vehicles</a>
                 <a class="dropdown-item" href="{% url 'workers' %}">All workers</a>
                 <a class="dropdown-item" href="{% url 'tasks' %}">All tasks</a>
+                <a class="dropdown-item" href="{% url 'groups' %}">All groups</a>
                 {% elif group.name == 'worker'%}
                 <a class="dropdown-item" href="{% url 'tasks' %}">All tasks</a>
                 {%endif%}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+    <form method="post" >
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">Group {{workergroup}} will be removed</legend>
+
+            <button type="submit" class="btn btn-outline-danger">Are you sure you want to remove this group?</button>
+             <a class="btn btn-outline-info" href="{% url 'groups' %}">Cancel</a>
+        </fieldset>
+    </form>
+{% endblock %}

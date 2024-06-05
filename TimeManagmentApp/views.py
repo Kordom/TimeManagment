@@ -14,6 +14,7 @@ from django.urls import reverse_lazy
 from .forms import *
 from django.core.exceptions import ObjectDoesNotExist
 
+
 class ProjectDetailView(generic.DetailView):
     """
     Project detalized view for one project
@@ -111,6 +112,26 @@ class WorkerListView(LoginRequiredMixin, generic.ListView):
     context_object_name = 'worker_list'
     template_name = 'list_templates/workers.html'
 
+
+class WorkerGroupListView(LoginRequiredMixin, generic.ListView):
+    """
+    Worker Group view for all groups
+    """
+    model = WorkerGroup
+    context_object_name = 'group_list'
+    template_name = 'list_templates/workergroups.html'
+
+
+class WorkerGroupDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView):
+    """
+    Worker Group Delete  view
+    """
+    model = WorkerGroup
+    success_url = reverse_lazy('groups')
+    template_name = 'deletion/group_deletion.html'
+
+    def test_func(self):
+        return self.request.user.groups.filter(name='manager').exists()
 
 class UserWorkerCreateView(LoginRequiredMixin, generic.CreateView):
     """
@@ -431,6 +452,7 @@ class TaskManagementView(LoginRequiredMixin, UserPassesTestMixin, generic.Update
     """
     Add workers and task updation
     """
+
     def get(self, request, task_id):
         task = get_object_or_404(Task, id=task_id)
         WorkerTaskFormSet = inlineformset_factory(Task, WorkerTask, fields=('worker',), extra=1)
