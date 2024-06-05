@@ -49,6 +49,16 @@ class Worker(models.Model):
     def __str__(self):
         return f"{self.user.username} {self.role} {self.price_per_hour} {self.status}"
 
+    @property
+    def total_wage(self):
+        """
+        Calculate the total wage for the worker based on price per hour.
+        """
+        total_wage = 0
+        for task in self.workertask_set.all():
+            total_wage += task.task.duration_hours * self.price_per_hour
+        return total_wage
+
 
 class Vehicle(models.Model):
     license_plate = models.CharField(max_length=6, unique=True)
@@ -90,6 +100,7 @@ class Task(models.Model):
                               help_text='Task status')
     priority = models.IntegerField('Priority (0-5)', validators=[MaxValueValidator(5), MinValueValidator(0)])
     due_date = models.DateTimeField('Should be done')
+    duration_hours = models.IntegerField('Duration (hours)', default=0)
 
     def __str__(self):
         return f"{self.title} Priority: {self.priority}"

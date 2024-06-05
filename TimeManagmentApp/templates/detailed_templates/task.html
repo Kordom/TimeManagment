@@ -21,6 +21,9 @@
   <dt class="col-sm-3">Due date:</dt>
   <dd class="col-sm-9">{{task.due_date}}</dd>
 
+    <dt class="col-sm-3">Total Hours:</dt>
+  <dd class="col-sm-9">{{task.duration_hours}} h.</dd>
+
 
     {% for person in task.workertask_set.all %}
     <dt class="col-sm-3">Assigned person:</dt>

@@ -153,19 +153,6 @@ class WorkerUpdateForm(forms.ModelForm):
         }
 
 
-class UserTaskCreateForm(forms.ModelForm):
-    """
-    Task creation form by user
-    """
-
-    class Meta:
-        model = Task
-        fields = ('title', 'description', 'status', 'priority', 'due_date')
-        widgets = {
-            'due_date': DateTimeInput(),
-        }
-
-
 class UserWorkerCreateForm(forms.ModelForm):
     """
     Worker create form by user
@@ -201,6 +188,19 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = '__all__'
+
+
+class UserTaskCreateForm(forms.ModelForm):
+    """
+    Task creation form by user
+    """
+
+    class Meta:
+        model = Task
+        fields = ('title', 'description', 'status', 'priority', 'due_date', 'duration_hours')
+        widgets = {
+            'due_date': DateTimeInput(),
+        }
 
 
 class AddWorkerForm(forms.Form):

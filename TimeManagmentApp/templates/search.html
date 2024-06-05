@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
+{% if user.is_authenticated %}
 <h1>Search by "{{query_text }}" results</h1>
 
 <ul>
@@ -9,6 +10,7 @@
 {% endfor %}
 </ul>
 
-
+{% endif %}
+<p>First log in <a href="{%url 'login'%}">Here</a></p>
 
 {% endblock %}

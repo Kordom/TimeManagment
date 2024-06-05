@@ -27,7 +27,8 @@
             <br>
             <b>Worker Role:</b> {{user.worker.role}}<br>
             <b>Price per hour:</b> {{user.worker.price_per_hour}} €<br>
-            <b>Skills:</b> {{user.worker.skills}}
+            <b>Skills:</b> {{user.worker.skills}}<br>
+            <b>Total Wage:</b> €{{ user.worker.total_wage }}<br>
 
             {{ u_form | crispy }}
             {{ p_form | crispy }}
