@@ -12,7 +12,7 @@ from django.contrib.auth.models import Group
 import re
 from django.urls import reverse_lazy
 from .forms import *
-
+from django.core.exceptions import ObjectDoesNotExist
 
 class ProjectDetailView(generic.DetailView):
     """
@@ -288,12 +288,15 @@ class TaskListView(LoginRequiredMixin, generic.ListView):
         """
         user = self.request.user
         if user.groups.filter(name='worker').exists():
-            worker = Worker.objects.get(user=user)
-            worker_tasks = WorkerTask.objects.filter(worker=worker).values_list('task_id', flat=True)
-            if worker_tasks.exists():
-                return Task.objects.filter(id__in=worker_tasks).order_by('priority')
-            else:
-                return Task.objects.none()  #
+            try:
+                worker = Worker.objects.get(user=user)
+                worker_tasks = WorkerTask.objects.filter(worker=worker).values_list('task_id', flat=True)
+                if worker_tasks.exists():
+                    return Task.objects.filter(id__in=worker_tasks).order_by('priority')
+                else:
+                    return Task.objects.none()
+            except ObjectDoesNotExist:
+                return Task.objects.none()
         else:
             return Task.objects.order_by('priority')
 
@@ -412,6 +415,9 @@ class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteView
 
 
 class UserTaskManager(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+    """
+    Task managment deletion, update and other things
+    """
     model = WorkerTask
     form_class = ManagerWorkerTaskForm
     template_name = 'taskmanager.html'
@@ -422,6 +428,9 @@ class UserTaskManager(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateVie
 
 
 class TaskManagementView(LoginRequiredMixin, UserPassesTestMixin, generic.UpdateView):
+    """
+    Add workers and task updation
+    """
     def get(self, request, task_id):
         task = get_object_or_404(Task, id=task_id)
         WorkerTaskFormSet = inlineformset_factory(Task, WorkerTask, fields=('worker',), extra=1)
