@@ -75,7 +75,7 @@
                 <a class="dropdown-item" href="{% url 'groups' %}">All groups</a>
                 {% elif group.name == 'worker'%}
                 <a class="dropdown-item" href="{% url 'tasks' %}">All tasks</a>
-                <a class="dropdown-item" href="{% url 'vehicle' user.worker.workergroup_set.first.vehicle.id %}">Assigned vehicle</a>
+                <a class="dropdown-item" href="{% url 'vehicle' user.worker.workergroup_set.first.vehicle.id %}">Assigned vehicle</a> {# The problem here appears when user is registered but not assigned to a worker, needed to fix #}
                 {%endif%}
                 {% endfor %}
 
