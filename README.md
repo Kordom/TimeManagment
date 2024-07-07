@@ -1,0 +1,1 @@
+2nd Django web app with higher comlexity level, DB was constructed for this app. With this app its possible to make construction projects, assign workers, assign worker groups, assign cars to the project.
